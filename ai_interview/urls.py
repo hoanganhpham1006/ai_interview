@@ -16,9 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from projects.views import video_feed
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('projects/', include('projects.urls')),
     path('video_feed/', video_feed, name="video-feed"),
+    path('', include("projects.urls")),
+    # path('home/', v.home, name="home"),
+    # path("register/", v.register, name="register"),
+    path('', include("django.contrib.auth.urls"))
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

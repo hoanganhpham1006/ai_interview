@@ -25,7 +25,7 @@ SECRET_KEY = '+-2)%0p3$7v6bvi3t#h=ayov1o+qe8f-2-36=!_e#nw=+y+v%6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'projects',
     'django_seed',
+    "crispy_forms",
+    'projects.apps.ProjectsConfig',
 ]
 
 MIDDLEWARE = [
@@ -124,3 +126,11 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     '/var/www/static/',
 ]
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+CRISPY_TEMPLATE_PACK="bootstrap4"
+
+LOGIN_REDIRECT_URL = '/home'
+LOGOUT_REDIRECT_URL = '/login'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
