@@ -1,0 +1,15 @@
+{%extends "base.html"%}
+{% block title %} Upload {% endblock %}
+{% load crispy_forms_tags %}
+{% block page_content %}
+	<h2>Upload</h2>
+	<form method="post" enctype="multipart/form-data">
+		{% csrf_token %}
+		<!-- {{ form|crispy }} -->
+		<input type="file" name="document" accept="application/pdf">
+		<button type="submit">Upload</button>
+	</form>
+	{% if file_url %}
+		<p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ file_url }}</a></p>
+	{% endif %}
+{% endblock %}
