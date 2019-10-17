@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_content %}
+<h1>Interviews show</h1>
+{% for interview in interviews %}
+  <p>Interview no {{interview.interview_id}}</p>  
+  <p>Created by: {{interview.interview_created_by.username}}</p>
+  <p>Candidate name: {{interview.resume.resume_name}}</p>
+  <p>Test name: {{interview.interview_test.test_name}}</p>
+  <a href="{% url 'interview_detail' interview.pk %}">Detail</a>
+  <br>
+  <br>
+{% endfor %}
+{% endblock page_content %}

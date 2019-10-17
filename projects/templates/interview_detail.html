@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_content %}
+<h1>AI Interview</h1>
+<div class="jumbotron">
+  <div class="row">
+    <div class="col-3">
+      <h5>Welcome!</h5>
+      <p>Click start button when you are ready...</p>
+      <p><a class="btn btn-primary btn-lg" href="#" role="button" onclick="playAudio()">Start Interview</a></p>
+    </div>
+    <div class="col-6">
+      <img src="{% url 'video-feed' %}" alt="Webcam Failed" style="width: 100%;">
+    </div>
+    <div class="col-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title"><h5>Interview's Information</h5></div>
+          <div class="card-text">
+            <p><ei>Test Name:</ei> {{interview.interview_test.test_name}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title"><h5>Candidate's Information</h5></div>
+          <div class="card-text">
+            <p><i>Name:</i> {{interview.resume.resume_name}}</p>
+            <p><i>Date of birth:</i> {{interview.resume.resume_dob}}</p>
+            <p><i>Mobile:</i> {{interview.resume.resume_mobile}}</p>
+            <p><i>Email:</i> {{interview.resume.resume_email}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="text-align:center; font-size:40px">
+  <div class="row justify-content-center">
+    <div class="col-1">
+      <img src="{% static 'img/chatbot_icon.png'%}" style="width: 80%"/>
+    </div>
+    <div class="col-1">
+      <p style="font-size:20px; color:grey;justify-content:center;line-height:35px" id="bot_status">Speaking ...</p>
+    </div>
+  </div>
+  <div>
+  <audio id="myAudio" style="display: none;">
+      <source src="{% static 'question_sound/welcome_audio.mp3' %}" type="audio/mpeg">
+  </audio>
+  <audio id="myEndAudio" style="display: none;">
+      <source src="{% static 'question_sound/thankyou.mp3' %}" type="audio/mpeg">
+  </audio>
+    {% for question in questions %}
+        
+        <p style="display: none;" id="{{ forloop.counter }}_content">{{question.question_content}}</p>
+        <div style="display: none;" id="{{ forloop.counter }}_div">
+          <br>
+          <audio id="{{ forloop.counter }}_question" style="display: none;">
+            <source src="{% static question.question_sound_file %}" type="audio/mpeg">
+          </audio>
+          <p id='{{ forloop.counter }}_result' style="font-size:25px; color:grey;">
+            ...
+          </p>
+        </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  function startConverting(index) {
+    var r=document.getElementById(index.toString()+'_result');
+    var spr=new webkitSpeechRecognition(); //Initialisation of web Kit
+      spr.continuous=false; //True if continous conversion is needed, false to stop transalation when paused 
+      spr.interimResults=true;
+      spr.lang='vi-VN'; // Set Input language
+      spr.start(); //Start Recording the voice 
+      var ftr='';
+      spr.onresult=function(event){
+          var interimTranscripts='';
+          for(var i=event.resultIndex;i<event.results.length;i++)
+          {
+              var transcript=event.results[i][0].transcript;
+              transcript.replace("\n","<br>")
+              if(event.results[i].isFinal){
+                  ftr+=transcript;
+              }
+              else
+              interimTranscripts+=transcript;
+          }
+          r.innerHTML=ftr +interimTranscripts ;
+      };
+      spr.onerror=function(event){};
+      spr.onend=function(event){
+        if (index == 1) {
+          p1.style.display = "none";
+          r2.style.display = "none";
+          p2.style.display = "";
+          r2.style.display = "";
+          b.innerHTML= "Speaking ...";
+          conversations += r.textContent + '\n';;
+          r.style.display = "none";
+          x2.play(); 
+          conversations += p2.textContent + '\n';;
+        }
+        if (index == 2) {
+          p2.style.display = "none";
+          r2.style.display = "none";
+          p3.style.display = "";
+          r3.style.display = "";
+          b.innerHTML= "Speaking ...";
+          conversations += r.textContent + '\n';;
+          r.style.display = "none";
+          x3.play(); 
+          conversations += p3.textContent + '\n';;
+        }
+        if (index == 3) {
+          p3.style.display = "none";
+          r3.style.display = "none";
+          p4.style.display = "";
+          r4.style.display = "";
+          b.innerHTML= "Speaking ...";
+          conversations += r.textContent + '\n';;
+          r.style.display = "none";
+          x4.play(); 
+          conversations += p4.textContent + '\n';;
+        }
+        if (index == 4) {
+          p4.style.display = "none";
+          r4.style.display = "none";
+          p5.style.display = "";
+          r5.style.display = "";
+          b.innerHTML= "Speaking ...";
+          conversations += r.textContent + '\n';;
+          r.style.display = "none";
+          x5.play(); 
+          conversations += p5.textContent + '\n';;
+        }
+        if (index == 5) {
+          p5.style.display = "none";
+          r5.style.display = "none";
+          b.innerHTML= "Speaking ...";
+          r.style.display = "none";
+          conversations += r.textContent + '\n';;
+          endx.play();
+        }
+
+      };
+  }
+  var b = document.getElementById("bot_status"); 
+  var x = document.getElementById("myAudio"); 
+  var endx = document.getElementById("myEndAudio"); 
+  var x1 = document.getElementById("1_question");
+  var p1 = document.getElementById("1_content");
+  var r1 = document.getElementById("1_div");
+  var x2 = document.getElementById("2_question");
+  var p2 = document.getElementById("2_content");
+  var r2 = document.getElementById("2_div");
+  var x3= document.getElementById("3_question");
+  var p3 = document.getElementById("3_content");
+  var r3 = document.getElementById("3_div");
+  var x4= document.getElementById("4_question");
+  var p4 = document.getElementById("4_content");
+  var r4 = document.getElementById("4_div");
+  var x5= document.getElementById("5_question");
+  var p5 = document.getElementById("5_content");
+  var r5 = document.getElementById("5_div");
+  var conversations = "";
+  function playAudio() { 
+    x.play(); 
+  } 
+  x.onended = function () {
+    x1.play();
+    conversations += p1.textContent + '\n';
+    p1.style.display = "";
+    r1.style.display = "";   
+  };
+  x1.onended = function () {
+    b.innerHTML= "Listening ...";
+    startConverting(1);
+  };
+  x2.onended = function () {
+    b.innerHTML= "Listening ...";
+    startConverting(2);
+  };
+  x3.onended = function () {
+    b.innerHTML= "Listening ...";
+    startConverting(3);
+  };
+  x4.onended = function () {
+    b.innerHTML= "Listening ...";
+    startConverting(4);
+  };
+  x5.onended = function () {
+    b.innerHTML= "Listening ...";
+    startConverting(5);
+  };
+  endx.onended = function () {
+    b.innerHTML= 'Kết thúc phỏng vấn.';
+    $.ajax({
+        type:"POST",
+        url:"/projects/interview/11/",
+        data: {
+          send : conversations,
+        },
+        success: function(){
+            alert('Kết thúc phỏng vấn. Kết quả đã được lưu.');
+        }
+    });
+  };
+</script>
+{% endblock page_content %}

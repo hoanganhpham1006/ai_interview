@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_content %}
+<div>
+  <div id='result'>
+    Your text will  appear here
+  </div>
+  <br>
+  <div id= 'record'>
+      <button onclick="startConverting()" class='btn btn-info btn-sm' id="re">record</button>
+      <button class='btn btn-info btn-sm ml-3' value="Send" id="send">Send</button>
+  </div>
+
+  <script>
+     function startConverting() {
+      document.getElementById("re").style.visibility = "hidden";   
+      var r=document.getElementById('result');
+      var spr=new webkitSpeechRecognition(); //Initialisation of web Kit
+        spr.continuous=false; //True if continous conversion is needed, false to stop transalation when paused 
+        spr.interimResults=true;
+        spr.lang='vi-VN'; // Set Input language
+        spr.start(); //Start Recording the voice 
+        var ftr='';
+        spr.onresult=function(event){
+            var interimTranscripts='';
+            for(var i=event.resultIndex;i<event.results.length;i++)
+            {
+                var transcript=event.results[i][0].transcript;
+                transcript.replace("\n","<br>")
+                if(event.results[i].isFinal){
+                    ftr+=transcript;
+                }
+                else
+                interimTranscripts+=transcript;
+            }
+            r.innerHTML=ftr +interimTranscripts ;
+        };
+        spr.onerror=function(event){};
+        spr.onend=function(event){
+          alert('ended');
+        };
+    }
+  </script>
+</div>
+{% endblock page_content %}

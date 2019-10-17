@@ -11,6 +11,7 @@ class Question(models.Model):
   question_content = models.TextField()
   question_category = models.IntegerField()
   question_type = models.IntegerField()
+  question_sound_file = models.FilePathField(path="/quesion_sound/")
 
 class Answer(models.Model):
   answer_id = models.AutoField(primary_key=True)
@@ -19,7 +20,7 @@ class Answer(models.Model):
 class Resume(models.Model):
   resume_id = models.AutoField(primary_key=True)
   resume_created_by = models.ForeignKey('User', on_delete=models.CASCADE)
-  resume_name = models.TextField()
+  resume_name = models.CharField(max_length=100)
   resume_dob = models.DateTimeField()
   resume_mobile = models.TextField()
   resume_email = models.EmailField()
@@ -43,9 +44,13 @@ class Interview(models.Model):
   resume = models.ForeignKey('Resume', on_delete=models.CASCADE)
   interview_link = models.TextField()
   interview_result = models.TextField()
+  interview_test = models.ForeignKey('Test', on_delete=models.CASCADE)
+  interview_videorecord_file = models.FilePathField(path="/interview_video/")
+  interview_conversation_text = models.TextField()
 
 
 class QuestionTest(models.Model):
   qt_id = models.AutoField(primary_key=True)
   question = models.ForeignKey('Question', on_delete=models.CASCADE)
   test = models.ForeignKey('Test', on_delete=models.CASCADE)
+  question_index = models.IntegerField()
