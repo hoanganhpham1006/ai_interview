@@ -1,10 +1,10 @@
 from django.db import models
-
+from django.conf import settings
 # Create your models here.
-class User(models.Model):
-  user_id = models.AutoField(primary_key=True)
-  username = models.CharField(max_length=100)
-  password = models.CharField(max_length=100)
+# class User(models.Model):
+#   user_id = models.AutoField(primary_key=True)
+#   username = models.CharField(max_length=100)
+#   password = models.CharField(max_length=100)
 
 class Question(models.Model):
   question_id = models.AutoField(primary_key=True)
@@ -19,7 +19,8 @@ class Answer(models.Model):
 
 class Resume(models.Model):
   resume_id = models.AutoField(primary_key=True)
-  resume_created_by = models.ForeignKey('User', on_delete=models.CASCADE)
+  # resume_created_by = models.ForeignKey('User', on_delete=models.CASCADE)
+  resume_created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   resume_name = models.CharField(max_length=100)
   resume_dob = models.DateTimeField()
   resume_mobile = models.TextField()
@@ -35,12 +36,14 @@ class QuestionAnwser(models.Model):
 class Test(models.Model):
   test_id = models.AutoField(primary_key=True)
   test_name = models.CharField(max_length=100)
-  test_created_by = models.ForeignKey('User', on_delete=models.CASCADE)
+  # test_created_by = models.ForeignKey('User', on_delete=models.CASCADE)
+  test_created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 
 class Interview(models.Model):
   interview_id = models.AutoField(primary_key=True)
-  interview_created_by = models.ForeignKey('User', on_delete=models.CASCADE)
+  interview_created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+  # interview_created_by = models.ForeignKey('User', on_delete=models.CASCADE)
   resume = models.ForeignKey('Resume', on_delete=models.CASCADE)
   interview_link = models.TextField()
   interview_result = models.TextField()
