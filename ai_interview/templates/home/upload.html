@@ -9,7 +9,14 @@
 		<input type="file" name="document" accept="application/pdf">
 		<button type="submit">Upload</button>
 	</form>
-	{% if file_url %}
-		<p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ file_url }}</a></p>
+	{% if data %}
+		<div>	
+			<p>Created by: {{user}}</p>
+			<p>Name: {{data.name.value}}</p>
+			<p>Dob: {{data.dob.value}}</p>
+			<p>Email: {{data.email.value}}</p>
+			<p>Phone: {{data.phone.value}}</p>
+			<p>CV Link: {{data.link}}</p>
+		</div>
 	{% endif %}
 {% endblock %}

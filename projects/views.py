@@ -5,7 +5,7 @@ import cv2
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import FileSystemStorage
 from .forms import RegisterForm, UploadCvForm
-
+from .pdf_handler import extract_pdf
 # Create your views here.
 
 def interview_index(request):
@@ -68,8 +68,20 @@ def upload(response):
 		file_save = FileSystemStorage()
 		filename = file_save.save(upload_file.name, upload_file)
 		file_url = file_save.url(filename)
+		data = extract_pdf(file_url[1:])
+		user = response.user
 
-		return render(response, "home/upload.html", {"file_url":file_url})
+		resume = Resume(
+			resume_created_by = user,
+			resume_name = data['name']['value'],
+			resume_dob = data['dob']['value'],
+			resume_mobile = data['phone']['value'],
+			resume_email = data['email']['value'],
+			resume_link = data['link']
+		)
+		resume.save()
+
+		return render(response, "home/upload.html", {"data":data}, {"user":user})
 	return render(response, "home/upload.html")
 
 def register(response):
