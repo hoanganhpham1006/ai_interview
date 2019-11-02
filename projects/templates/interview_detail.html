@@ -41,7 +41,7 @@
       <img src="{% static 'img/chatbot_icon.png'%}" style="width: 80%"/>
     </div>
     <div class="col-1">
-      <p style="font-size:20px; color:grey;justify-content:center;line-height:35px" id="bot_status">Speaking ...</p>
+      <p style="font-size:20px; color:grey;justify-content:center;line-height:35px" id="bot_status">...</p>
     </div>
   </div>
   <div>
@@ -59,147 +59,115 @@
           <audio id="{{ forloop.counter }}_question" style="display: none;">
             <source src="{% static question.question_sound_file %}" type="audio/mpeg">
           </audio>
-          <p id='{{ forloop.counter }}_result' style="font-size:25px; color:grey;">
-            ...
-          </p>
         </div>
     {% endfor %}
+    <p id='result' style="font-size:25px; color:grey;">
+      ...
+    </p>
   </div>
 </div>
 
 <script>
-  function startConverting(index) {
-    var r=document.getElementById(index.toString()+'_result');
-    var spr=new webkitSpeechRecognition(); //Initialisation of web Kit
-      spr.continuous=false; //True if continous conversion is needed, false to stop transalation when paused 
-      spr.interimResults=true;
-      spr.lang='vi-VN'; // Set Input language
-      spr.start(); //Start Recording the voice 
-      var ftr='';
-      spr.onresult=function(event){
-          var interimTranscripts='';
-          for(var i=event.resultIndex;i<event.results.length;i++)
-          {
-              var transcript=event.results[i][0].transcript;
-              transcript.replace("\n","<br>")
-              if(event.results[i].isFinal){
-                  ftr+=transcript;
-              }
-              else
-              interimTranscripts+=transcript;
-          }
-          r.innerHTML=ftr +interimTranscripts ;
-      };
-      spr.onerror=function(event){};
-      spr.onend=function(event){
-        if (index == 1) {
-          p1.style.display = "none";
-          r2.style.display = "none";
-          p2.style.display = "";
-          r2.style.display = "";
-          b.innerHTML= "Speaking ...";
-          conversations += r.textContent + '\n';;
-          r.style.display = "none";
-          x2.play(); 
-          conversations += p2.textContent + '\n';;
-        }
-        if (index == 2) {
-          p2.style.display = "none";
-          r2.style.display = "none";
-          p3.style.display = "";
-          r3.style.display = "";
-          b.innerHTML= "Speaking ...";
-          conversations += r.textContent + '\n';;
-          r.style.display = "none";
-          x3.play(); 
-          conversations += p3.textContent + '\n';;
-        }
-        if (index == 3) {
-          p3.style.display = "none";
-          r3.style.display = "none";
-          p4.style.display = "";
-          r4.style.display = "";
-          b.innerHTML= "Speaking ...";
-          conversations += r.textContent + '\n';;
-          r.style.display = "none";
-          x4.play(); 
-          conversations += p4.textContent + '\n';;
-        }
-        if (index == 4) {
-          p4.style.display = "none";
-          r4.style.display = "none";
-          p5.style.display = "";
-          r5.style.display = "";
-          b.innerHTML= "Speaking ...";
-          conversations += r.textContent + '\n';;
-          r.style.display = "none";
-          x5.play(); 
-          conversations += p5.textContent + '\n';;
-        }
-        if (index == 5) {
-          p5.style.display = "none";
-          r5.style.display = "none";
-          b.innerHTML= "Speaking ...";
-          r.style.display = "none";
-          conversations += r.textContent + '\n';;
-          endx.play();
-        }
+  function speaking(question_number) {
+    if (question_number > 1) {
+      content_array[question_number-2].style.display = "none";
+      div_array[question_number-2].style.display = "none";
+    }
+    content_array[question_number-1].style.display = "";
+    div_array[question_number-1].style.display = "";
+    b.innerHTML= "Speaking ...";
+    question_array[question_number-1].play(); 
+    conversations += content_array[question_number-1].textContent + '\n';
+    question_array[question_number-1].onended = function () {
+      b.innerHTML= "Listening ...";
+    };
+  }
 
-      };
+  function listen_end(question_number, answer_content) {
+    if (Date.now() - time_control > 3000) {
+      conversations += answer_content + '\n';
+      speaking(question_number + 1);
+      time_control = Date.now();
+    }
+    else console.log("Noise")
+  }
+  function startConverting() {
+    var index = 1;
+    speaking(index);
+    var r=document.getElementById('result');
+    var spr = new webkitSpeechRecognition(); //Initialisation of web Kit
+    spr.continuous=true; //True if continous conversion is needed, false to stop transalation when paused 
+    spr.interimResults=true;
+    spr.lang='vi-VN'; // Set Input language
+    spr.start(); //Start Recording the voice
+    var ftr='';
+    var t;
+    spr.onresult=function(event){
+      var interimTranscripts='';
+      for(var i=event.resultIndex;i<event.results.length;i++)
+      {
+          var transcript=event.results[i][0].transcript;
+          transcript.replace("\n","<br>")
+          if(event.results[i].isFinal){
+              ftr+=transcript;
+          }
+          else
+          interimTranscripts+=transcript;
+      }
+      r.innerHTML=ftr +interimTranscripts ;
+      clearTimeout(t);
+      t = setTimeout(function(){
+        try{
+          listen_end(index, r.innerHTML.trim());
+          index += 1;
+          console.log("sent");
+          ftr="";
+        }
+        catch(err) {
+          endx.play();
+          return;
+        }
+      }, 2000);
+    };
+    spr.onerror=function(event){clearTimeout(t);console.log("err: " + event.error);};
+    spr.onend=function(event){
+      spr.start();
+      console.log(333);
+    };
   }
   var b = document.getElementById("bot_status"); 
   var x = document.getElementById("myAudio"); 
   var endx = document.getElementById("myEndAudio"); 
-  var x1 = document.getElementById("1_question");
-  var p1 = document.getElementById("1_content");
-  var r1 = document.getElementById("1_div");
-  var x2 = document.getElementById("2_question");
-  var p2 = document.getElementById("2_content");
-  var r2 = document.getElementById("2_div");
-  var x3= document.getElementById("3_question");
-  var p3 = document.getElementById("3_content");
-  var r3 = document.getElementById("3_div");
-  var x4= document.getElementById("4_question");
-  var p4 = document.getElementById("4_content");
-  var r4 = document.getElementById("4_div");
-  var x5= document.getElementById("5_question");
-  var p5 = document.getElementById("5_content");
-  var r5 = document.getElementById("5_div");
+  var question_array = [];
+  var content_array = [];
+  var div_array = [];
+  var time_control = Date.now();
   var conversations = "";
-  function playAudio() { 
-    x.play(); 
+
+  function init() {
+    var i = 1;
+    while (!!document.getElementById(i.toString() + "_question")) {
+      question_array.push(document.getElementById(i.toString() + "_question"));
+      content_array.push(document.getElementById(i.toString() + "_content"));
+      div_array.push(document.getElementById(i.toString() + "_div"));
+      i += 1;
+    }
+  }
+
+  function playAudio() {
+    init();
+    b.innerHTML= "Speaking ...";
+    x.play();
   } 
   x.onended = function () {
-    x1.play();
-    conversations += p1.textContent + '\n';
-    p1.style.display = "";
-    r1.style.display = "";   
+    startConverting();  
   };
-  x1.onended = function () {
-    b.innerHTML= "Listening ...";
-    startConverting(1);
-  };
-  x2.onended = function () {
-    b.innerHTML= "Listening ...";
-    startConverting(2);
-  };
-  x3.onended = function () {
-    b.innerHTML= "Listening ...";
-    startConverting(3);
-  };
-  x4.onended = function () {
-    b.innerHTML= "Listening ...";
-    startConverting(4);
-  };
-  x5.onended = function () {
-    b.innerHTML= "Listening ...";
-    startConverting(5);
-  };
+
   endx.onended = function () {
     b.innerHTML= 'Kết thúc phỏng vấn.';
     $.ajax({
         type:"POST",
-        url:"/projects/interview/11/",
+        url:"/projects/interview/1/",
         data: {
           send : conversations,
         },
